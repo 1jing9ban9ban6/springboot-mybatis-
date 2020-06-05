@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 此处与接口类地址对应 -->
+<mapper namespace="com.mybatis.dao.ProjectMapper">
+    <resultMap type="com.mybatis.pojo.Project" id="ProjectResultMap">
+        <id property="pid" column="project_id"/>
+        <result property="pname" column="pname"/>
+        <result property="price" column="price"></result>
+        <collection property="users" javaType="java.util.List" ofType="com.mybatis.pojo.User">
+<!--            <id property="id" column="id"></id>-->
+            <id property="id" column="id"></id>
+            <result property="name" column="name"/>
+            <result property="age" column="age"/>
+            <result property="email" column="email"/>
+        </collection>
+    </resultMap>
+    <select id="getPro" resultMap="ProjectResultMap">
+        select p.project_id, p.pname, p.price, u.name,u.age, u.email
+        from project p left join user u on p.uid=u.id
+    </select>
+    <select id="countByProList" resultType="java.lang.Integer" parameterType="list">
+        select count(*) from project
+        <where>
+            project_id in
+            <foreach item="item" collection="list" separator="," open="(" close=")" index="">
+                #{item}
+            </foreach>
+        </where>
+    </select>
+</mapper>

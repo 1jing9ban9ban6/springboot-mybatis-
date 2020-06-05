@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 此处与接口类地址对应 -->
+<mapper namespace="com.mybatis.dao.EmailsMapper">
+    <resultMap id="EmailsResultMap" type="com.mybatis.pojo.Emails">
+        <result column="email_id" property="emailId" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+    </resultMap>
+    <select id="getAllById" parameterType="java.lang.String" resultMap="AllResultMap">
+        select * from user u, emails e where u.email=e.email_id and u.id=#{id}
+    </select>
+    <!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
+    <resultMap type="com.mybatis.pojo.UserVo" id="AllResultMap">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="age" column="age"></result>
+        <association property="emails" javaType="com.mybatis.pojo.Emails">
+            <id property="emailId" column="email_id"/>
+            <result property="type" column="type"/>
+        </association>
+    </resultMap>
+    <select id="getAll" resultMap="AllResultMap">
+        select * from user u, emails e where u.email=e.email_id
+    </select>
+    <select id="getEmailById" parameterType="java.lang.String" resultMap="EmailsResultMap">
+        select * from emails where email_id = #{id}
+    </select>
+</mapper>

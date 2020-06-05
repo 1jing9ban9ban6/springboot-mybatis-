@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 此处与接口类地址对应 -->
+<mapper namespace="com.mybatis.dao.UserMapper">
+<!-- 全部字段在做映射-->
+    <resultMap id="userResultMap" type="com.mybatis.pojo.User">
+        <result column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="age" property="age" jdbcType="INTEGER"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+    </resultMap>
+<!--    表中部分字段做映射-->
+    <resultMap id="userNameMap" type="java.util.HashMap">
+        <result column="name" property="name" jdbcType="VARCHAR"></result>
+    </resultMap>
+<!--  根据id查用户  -->
+    <select id="getUserById" parameterType="java.lang.String" resultMap="userResultMap">
+        select * from user where id = #{id}
+    </select>
+<!--  新增一个用户  -->
+    <insert id="addUser" parameterType="com.mybatis.pojo.User">
+        INSERT INTO user(id,name,age,email)VALUES(#{id},#{name},#{age},#{email})
+    </insert>
+<!--  修改一个用户  -->
+<!--    <update id="updateUser" parameterType="java.lang.String">-->
+<!--        UPDATE user SET name = #{user.name}, age=#{user.age}, email=#{user.email} WHERE id =#{user.id}-->
+<!--    </update>-->
+    <update id="updateUser" parameterType="com.mybatis.pojo.User">
+        update user
+        <set>
+            <if test="name != null">name=#{name},</if>
+            <if test="age != null">age=#{age},</if>
+            <if test="email != null">email=#{email}</if>
+        </set>
+        where id=#{id}
+    </update>
+<!--  查询所有用户返回一个集合  -->
+    <select id="getUsers" resultMap="userResultMap">
+        select id, name, age, email from user
+    </select>
+<!--  根据用户id 删除  -->
+    <delete id="deleteUserById" parameterType="java.lang.String">
+        delete from user where id = #{id}
+    </delete>
+<!--  根据年龄或姓名  -->
+    <select id="getUserByAgeAndName" resultMap="userNameMap">
+        SELECT NAME FROM USER WHERE
+        <if test="age != null">
+            age > #{age} and
+        </if>
+        <if test="name != null">
+            name like CONCAT('%',#{name},'%' )
+        </if>
+    </select>
+    <select id="getUserByAgeAndName1" resultMap="userNameMap">
+        SELECT NAME FROM USER
+    </select>
+    <select id="getUserByPage" resultMap="userResultMap">
+        <bind name="offset" value="(pageNum-1)*pageSize"></bind>
+        SELECT * from USER
+        limit #{offset}, #{pageSize}
+    </select>
+</mapper>
